@@ -18,20 +18,41 @@ jobs:
         run: |
           whoami
           id
+
       - name: Prepare build folder for Arch packages
         uses: ./.github/actions/run-arch-command
         with:
           run: |
             sudo mkdir -p .build
             sudo chown build .build
-      - name: Build the package 'glibc-linux4'
-        uses: ./.github/actions/run-arch-command
+      # fakeroot-tcp
+      - name: Cache fakeroot-tcp
+        id: cache-fakeroot-tcp
+        uses: actions/cache@v4
         with:
-          run: make glibc-linux4.pkg.tar.zst
+          path: .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst
+          key: ${{ hashFiles(".build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst") }}
       - name: Build the package 'fakeroot-tcp'
+        if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
         uses: ./.github/actions/run-arch-command
         with:
-          run: make fakeroot-tcp.pkg.tar.zst
+          run: |
+            make fakeroot-tcp.pkg.tar.zst
+      # glibc-linux4
+      - name: Cache glibc-linux4
+        id: cache-glibc-linux4
+        uses: actions/cache@v4
+        with:
+          path: .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst
+          key: ${{ hashFiles(".build/glibc-linux4/glibc-linux4-*.pkg.tar.zst") }}
+      - name: Build the package 'glibc-linux4'
+        if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: |
+            make glibc-linux4.pkg.tar.zst
+
+      # Standard stuff
       - name: Copy the packages to the proper spot
         run: |
           cp -v .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst .
