@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst
-          key: ${{ hashFiles(".build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst") }}
+          key: ${{ hashFiles('.build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst') }}
       - name: Build the package 'fakeroot-tcp'
         if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
         uses: ./.github/actions/run-arch-command
@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst
-          key: ${{ hashFiles(".build/glibc-linux4/glibc-linux4-*.pkg.tar.zst") }}
+          key: ${{ hashFiles('.build/glibc-linux4/glibc-linux4-*.pkg.tar.zst') }}
       - name: Build the package 'glibc-linux4'
         if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
         uses: ./.github/actions/run-arch-command
