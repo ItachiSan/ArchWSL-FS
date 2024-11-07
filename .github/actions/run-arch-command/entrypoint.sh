@@ -19,6 +19,6 @@ do
     fi
 
     # Grouping guide here: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#grouping-log-lines
-    echo "::group::Running the command '$command'..."
-    $command
+    echo "::group::Running the command: $command"
+    eval $command
 done

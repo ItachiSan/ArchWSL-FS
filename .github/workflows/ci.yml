@@ -19,9 +19,9 @@ jobs:
         with:
           run: |
             curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/fakeroot-tcp.tar.gz
-            tar xf fakeroot-tcp.tar.gz
+            tar xvf fakeroot-tcp.tar.gz
             cd fakeroot-tcp
-            yes | sudo -u build makepkg -src
+            yes | sudo -u makepkg makepkg -src
             cp *.pkg.tar.zst ..
             cd ..
       - name: Store packages as artifacts for RootFS compilation
@@ -43,7 +43,7 @@ jobs:
             curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/glibc-linux4.tar.gz
             tar xf glibc-linux4.tar.gz
             cd glibc-linux4
-            yes | sudo -u build env MAKEFLAGS="-j$(nproc)" makepkg -src
+            yes | sudo -u makepkg env MAKEFLAGS="-j$(nproc)" makepkg -src
             cp *.pkg.tar.zst ..
             cd ..
       - name: Store packages as artifacts for RootFS compilation
