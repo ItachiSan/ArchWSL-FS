@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Who am I?
+        run: |
+          whoami
+          id
       - name: Build the package 'glibc-linux4'
         uses: ./.github/actions/run-arch-command
         with:
