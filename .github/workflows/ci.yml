@@ -31,7 +31,7 @@ jobs:
       - name: Copy the 'fakeroot-tcp' package to the proper spot
         if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
         run: |
-          cp -v .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
+          cp -v /github/workspace/.build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
 
       # glibc-linux4
       - name: Cache glibc-linux4
@@ -50,7 +50,7 @@ jobs:
       - name: Copy the 'fakeroot-tcp' package to the proper spot
         if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
         run: |
-          cp -v .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
+          cp -v /github/workspace/.build/glibc-linux4/glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
 
 
       # Standard stuff
