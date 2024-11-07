@@ -7,5 +7,13 @@ then
     [ -d "/github/home" ] && sudo chown -R build /github/home
 fi
 
-# The variable expansion converts all new lines to ';', thus making it a single line and compatible with '-c'
-exec bash -c "${INPUT_RUN//$'\n'/;}"
+# Convert the input to an array for nice formatting
+# Thanks: https://stackoverflow.com/a/57178833
+
+mapfile -t INPUT_ARRAY <<< $INPUT_RUN
+for command in "${INPUT_ARRAY[@]}"
+do
+    # Grouping guide here: https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#grouping-log-lines
+    echo "::group::Running the command '$command'..."
+    $command
+done

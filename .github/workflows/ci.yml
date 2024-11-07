@@ -19,12 +19,6 @@ jobs:
           whoami
           id
 
-      - name: Prepare build folder for Arch packages
-        uses: ./.github/actions/run-arch-command
-        with:
-          run: |
-            sudo mkdir -p .build
-            sudo chown build .build
       # fakeroot-tcp
       - name: Cache fakeroot-tcp
         id: cache-fakeroot-tcp
