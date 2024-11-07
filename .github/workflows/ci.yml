@@ -9,50 +9,57 @@ on:
       - main
 
 jobs:
-  compile:
-    name: Compile rootfs
+  build_packages:
+    name: Build Arch packages for the RootFS
     runs-on: ubuntu-latest
+    container: archlinux
+    steps:
+      - name: Set up build environments
+        run: |
+          pacman -Syu --needed --noconfirm base-devel
+          useradd -m build
+          echo "build ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+      - name: Build fakeroot-tcp
+        run: |
+          curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/fakeroot-tcp.tar.gz
+          tar xf fakeroot-tcp.tar.gz
+          cd fakeroot-tcp
+          yes | sudo -u build makepkg -src
+          cp *.pkg.tar.zst ..
+          cd ..
+      - name: Build glibc-linux4
+        run: |
+          curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/glibc-linux4.tar.gz
+          tar xf glibc-linux4.tar.gz
+          cd glibc-linux4
+          yes | sudo -u build makepkg -src
+          cp *.pkg.tar.zst ..
+          cd ..
+      - name: Show the current status
+        run: ls -R
+      - name: Store packages as artifacts for RootFS compilation
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch_packages
+          path: *.pkg.tar.zst
+
+  compile:
+    name: Compile RootFS
+    runs-on: ubuntu-latest
+    needs:
+      - build_packages
     steps:
       - uses: actions/checkout@v4
-
-      # fakeroot-tcp
-      - name: Cache fakeroot-tcp
-        id: cache-fakeroot-tcp
-        uses: actions/cache@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: fakeroot-tcp.pkg.tar.zst
-          key: cache-fakeroot-tcp
-      - name: Build the package 'fakeroot-tcp'
-        if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
-        uses: ./.github/actions/run-arch-command
-        with:
-          run: |
-            sudo -u build make fakeroot-tcp.pkg.tar.zst
-      - name: Copy the 'fakeroot-tcp' package to the proper spot
-        if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
-        run: |
-          cp -v /github/workspace/.build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
-
-      # glibc-linux4
-      - name: Cache glibc-linux4
-        id: cache-glibc-linux4
-        uses: actions/cache@v4
-        with:
-          path: glibc-linux4.pkg.tar.zst
-          key: cache-glibc-linux4
-      - name: Build the package 'glibc-linux4'
-        if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
-        uses: ./.github/actions/run-arch-command
-        with:
-          run: |
-            export MAKEFLAGS=-j$(nproc)
-            sudo -u build make glibc-linux4.pkg.tar.zst
-      - name: Copy the 'fakeroot-tcp' package to the proper spot
-        if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
-        run: |
-          cp -v /github/workspace/.build/glibc-linux4/glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
-
-
+          name: arch_packages
+      - name: Show the current status
+        run: ls -R
+      - name: Keep only relevant packages
+        run:
+          rm -v *debug*.pkg.tar.zst lib32-*.pkg.tar.zst
+          mv -v fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
+          mv -v glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
       # Standard stuff
       - name: Build the rootfs
         run: make
