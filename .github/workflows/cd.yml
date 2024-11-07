@@ -4,23 +4,20 @@ on:
   push:
     tags:
       - '*'
-  
+
 jobs:
   publish-github:
     name: Publish on Github
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies for build (Apt)
-        shell: bash
-        run: |
-          sudo env DEBIAN_FRONTEND=noninteractive apt update -y && \
-          sudo env DEBIAN_FRONTEND=noninteractive apt install -y libarchive-tools
-      - name: Build
-        run: |
-          make
+      - uses: actions/checkout@v4
+      - name: Build the rootfs
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: |
+            make
       - name: Upload the release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             rootfs.tar.gz
