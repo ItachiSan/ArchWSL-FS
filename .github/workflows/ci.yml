@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run the build
         uses: ./.github/actions/run-arch-command
-        run: |
-          make distclean
-          make
+        with:
+          run: |
+            make distclean
+            make
