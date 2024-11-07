@@ -16,6 +16,10 @@ inputs:
         command2
       ```
     required: true
+  chown:
+    description: Whether the folder should be chown-ed to the build user.
+    default: false
+    required: false
 runs:
   using: docker
   image: Dockerfile

@@ -17,6 +17,12 @@ A multiline string representing all commands run in the shell.
 
 See the example below for how to run multiple commands.
 
+### chown
+
+*Optional.*
+
+A boolean. If set to `true`, the workspace folder will be chown-ed to the `build` user.
+
 ## Examples
 
 ### Run a normal `make` build
