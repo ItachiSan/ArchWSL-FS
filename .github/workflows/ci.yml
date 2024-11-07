@@ -18,6 +18,12 @@ jobs:
         run: |
           whoami
           id
+      - name: Prepare build folder for Arch packages
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: |
+            sudo mkdir -p .build
+            sudo chown build .build
       - name: Build the package 'glibc-linux4'
         uses: ./.github/actions/run-arch-command
         with:
