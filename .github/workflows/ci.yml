@@ -22,7 +22,9 @@ jobs:
             tar xvf fakeroot-tcp.tar.gz
             sudo chown -R makepkg fakeroot-tcp
             cd fakeroot-tcp
-            yes | sudo -u makepkg makepkg -src
+            export MAKEFLAGS="-j$(nproc)"
+            echo "MAKEFLAGS=$MAKEFLAGS"
+            yes | sudo -E -u makepkg makepkg -src
             cp *.pkg.tar.zst ..
             cd ..
       - name: Store packages as artifacts for RootFS compilation
@@ -45,7 +47,9 @@ jobs:
             tar xvf glibc-linux4.tar.gz
             sudo chown -R makepkg glibc-linux4
             cd glibc-linux4
-            yes | sudo -u makepkg env MAKEFLAGS="-j$(nproc)" makepkg -src
+            export MAKEFLAGS="-j$(nproc)"
+            echo "MAKEFLAGS=$MAKEFLAGS"
+            yes | sudo -E -u makepkg makepkg -src
             cp *.pkg.tar.zst ..
             cd ..
       - name: Store packages as artifacts for RootFS compilation
@@ -67,7 +71,7 @@ jobs:
       - name: Show the current status
         run: ls -R
       - name: Keep only relevant packages
-        run:
+        run: |
           rm -v *debug*.pkg.tar.zst lib32-*.pkg.tar.zst
           mv -v fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
           mv -v glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
