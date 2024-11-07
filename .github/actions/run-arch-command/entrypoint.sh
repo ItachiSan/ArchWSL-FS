@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/usr/bin/env bash
 
 if [ -d "/github" ]; then
     sudo chown -R build /github/workspace /github/home

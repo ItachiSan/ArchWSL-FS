@@ -14,9 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run the build
+      - name: Build the package 'glibc-linux4'
         uses: ./.github/actions/run-arch-command
         with:
-          run: |
-            make distclean
-            make
+          run: make fakeroot-tcp.pkg.tar.zst
+      - name: Build the package 'fakeroot-tcp'
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: make fakeroot-tcp.pkg.tar.zst
+      - name: Build the rootfs
+        run: make
