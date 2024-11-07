@@ -41,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: arch_packages
-          path: *.pkg.tar.zst
+          path: "*.pkg.tar.zst"
 
   compile:
     name: Compile RootFS
