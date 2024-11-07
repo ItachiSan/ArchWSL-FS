@@ -9,50 +9,58 @@ on:
       - main
 
 jobs:
-  build_packages:
-    name: Build Arch packages for the RootFS
+  build_fakeroot-tcp:
+    name: Build fakeroot-tcp
     runs-on: ubuntu-latest
-    container: archlinux
     steps:
-      - name: Set up build environments
-        run: |
-          pacman -Syu --needed --noconfirm base-devel
-          useradd -m build
-          echo "build ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-      - name: Build fakeroot-tcp
-        run: |
-          curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/fakeroot-tcp.tar.gz
-          tar xf fakeroot-tcp.tar.gz
-          cd fakeroot-tcp
-          yes | sudo -u build makepkg -src
-          cp *.pkg.tar.zst ..
-          cd ..
-      - name: Build glibc-linux4
-        run: |
-          curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/glibc-linux4.tar.gz
-          tar xf glibc-linux4.tar.gz
-          cd glibc-linux4
-          yes | sudo -u build makepkg -src
-          cp *.pkg.tar.zst ..
-          cd ..
-      - name: Show the current status
-        run: ls -R
+      - name: Build the package
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: |
+            curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/fakeroot-tcp.tar.gz
+            tar xf fakeroot-tcp.tar.gz
+            cd fakeroot-tcp
+            yes | sudo -u build makepkg -src
+            cp *.pkg.tar.zst ..
+            cd ..
       - name: Store packages as artifacts for RootFS compilation
         uses: actions/upload-artifact@v4
         with:
-          name: arch_packages
-          path: "*.pkg.tar.zst"
+          name: fakeroot-tcp
+          path: |
+            ${{ github.workspace }}/*.pkg.tar.zst
+
+  build_glibc-linux4:
+    name: Build glibc-linux4
+    runs-on: ubuntu-latest
+    container: archlinux
+    steps:
+      - name: Build the package
+        uses: ./.github/actions/run-arch-command
+        with:
+          run: |
+            curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/glibc-linux4.tar.gz
+            tar xf glibc-linux4.tar.gz
+            cd glibc-linux4
+            yes | sudo -u build env MAKEFLAGS="-j$(nproc)" makepkg -src
+            cp *.pkg.tar.zst ..
+            cd ..
+      - name: Store packages as artifacts for RootFS compilation
+        uses: actions/upload-artifact@v4
+        with:
+          name: glibc-linux4
+          path: |
+            ${{ github.workspace }}/*.pkg.tar.zst
 
   compile:
     name: Compile RootFS
     runs-on: ubuntu-latest
-    needs:
-      - build_packages
+    needs: [build_fakeroot-tcp, build_glibc-linux4]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: arch_packages
+          merge-multiple: true
       - name: Show the current status
         run: ls -R
       - name: Keep only relevant packages
