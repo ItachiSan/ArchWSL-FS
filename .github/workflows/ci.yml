@@ -27,10 +27,14 @@ jobs:
       - name: Build the package 'glibc-linux4'
         uses: ./.github/actions/run-arch-command
         with:
-          run: make fakeroot-tcp.pkg.tar.zst
+          run: make glibc-linux4.pkg.tar.zst
       - name: Build the package 'fakeroot-tcp'
         uses: ./.github/actions/run-arch-command
         with:
           run: make fakeroot-tcp.pkg.tar.zst
+      - name: Copy the packages to the proper spot
+        run: |
+          cp -v .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst .
+          cp -v .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst .
       - name: Build the rootfs
         run: make
