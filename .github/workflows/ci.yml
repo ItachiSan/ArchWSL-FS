@@ -20,6 +20,7 @@ jobs:
           run: |
             curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/fakeroot-tcp.tar.gz
             tar xvf fakeroot-tcp.tar.gz
+            sudo chown -R makepkg fakeroot-tcp
             cd fakeroot-tcp
             yes | sudo -u makepkg makepkg -src
             cp *.pkg.tar.zst ..
@@ -41,7 +42,8 @@ jobs:
         with:
           run: |
             curl -O https://aur.archlinux.org/cgit/aur.git/snapshot/glibc-linux4.tar.gz
-            tar xf glibc-linux4.tar.gz
+            tar xvf glibc-linux4.tar.gz
+            sudo chown -R makepkg glibc-linux4
             cd glibc-linux4
             yes | sudo -u makepkg env MAKEFLAGS="-j$(nproc)" makepkg -src
             cp *.pkg.tar.zst ..
