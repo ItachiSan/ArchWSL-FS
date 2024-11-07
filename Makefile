@@ -54,7 +54,7 @@ scripts/arch-chroot: root.x86_64/usr/bin/arch-chroot
 	mkdir -p .build
 	cd .build ; $(CURL) -O https://aur.archlinux.org/cgit/aur.git/snapshot/$*.tar.gz
 	cd .build ; tar xf $*.tar.gz
-	-cd .build/$* ; makepkg -src ; rm *debug*.pkg.tar.zst; cp -v $*-*.pkg.tar.zst ../../$*.pkg.tar.zst
+	-cd .build/$* ; yes | makepkg -src ; rm *debug*.pkg.tar.zst; cp -v $*-*.pkg.tar.zst ../../$*.pkg.tar.zst
 
 # Rule for installing a package
 .target/installed_%: %.pkg.tar.zst .target/base_rootfs scripts/arch-chroot
