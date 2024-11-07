@@ -1,0 +1,13 @@
+# Ignore our build files. Here are all important descriptions.
+# Folder for tracking our progress
+.target
+# Folder where the AUR packages are built
+.build
+# Built packages
+/*.pkg.tar.*
+# Folder where we do our work
+root.x86_64
+# ArchLinux bootstrap tarball
+/bootstrap_*.tar.*
+# Our final rootfs tarball
+/rootfs.tar.*
