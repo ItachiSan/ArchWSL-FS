@@ -14,30 +14,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Who am I?
-        run: |
-          whoami
-          id
 
       # fakeroot-tcp
       - name: Cache fakeroot-tcp
         id: cache-fakeroot-tcp
         uses: actions/cache@v4
         with:
-          path: .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst
+          path: fakeroot-tcp.pkg.tar.zst
           key: cache-fakeroot-tcp
       - name: Build the package 'fakeroot-tcp'
         if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
         uses: ./.github/actions/run-arch-command
         with:
           run: |
-            make fakeroot-tcp.pkg.tar.zst
+            sudo -u build make fakeroot-tcp.pkg.tar.zst
+      - name: Copy the 'fakeroot-tcp' package to the proper spot
+        if: steps.cache-fakeroot-tcp.outputs.cache-hit != 'true'
+        run: |
+          cp -v .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
+
       # glibc-linux4
       - name: Cache glibc-linux4
         id: cache-glibc-linux4
         uses: actions/cache@v4
         with:
-          path: .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst
+          path: glibc-linux4.pkg.tar.zst
           key: cache-glibc-linux4
       - name: Build the package 'glibc-linux4'
         if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
@@ -45,12 +46,13 @@ jobs:
         with:
           run: |
             export MAKEFLAGS=-j$(nproc)
-            make glibc-linux4.pkg.tar.zst
+            sudo -u build make glibc-linux4.pkg.tar.zst
+      - name: Copy the 'fakeroot-tcp' package to the proper spot
+        if: steps.cache-glibc-linux4.outputs.cache-hit != 'true'
+        run: |
+          cp -v .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
+
 
       # Standard stuff
-      - name: Copy the packages to the proper spot
-        run: |
-          cp -v .build/fakeroot-tcp/fakeroot-tcp-*.pkg.tar.zst fakeroot-tcp.pkg.tar.zst
-          cp -v .build/glibc-linux4/glibc-linux4-*.pkg.tar.zst glibc-linux4.pkg.tar.zst
       - name: Build the rootfs
         run: make
