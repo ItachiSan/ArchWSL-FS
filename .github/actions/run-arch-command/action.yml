@@ -1,0 +1,21 @@
+# action.yml
+name: 'Run Arch command'
+description: 'Run commands in an ArchLinux container'
+author: Giovanni Santini
+inputs:
+  run:
+    description: |
+      Command(s) to run in the container.
+
+      In case of multiple commands in one time, one should use the multiline
+      syntax:
+
+      ```yaml
+      run: |
+        command1
+        command2
+      ```
+    required: true
+runs:
+  using: docker
+  image: Dockerfile

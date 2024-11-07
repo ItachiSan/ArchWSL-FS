@@ -7,18 +7,15 @@ on:
   pull_request:
     branches:
       - main
-      
+
 jobs:
   compile:
     name: Compile rootfs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies for build (Apt)
+      - uses: actions/checkout@v4
+      - name: Run the build
+        uses: ./.github/actions/run-arch-command
         run: |
-          sudo env DEBIAN_FRONTEND=noninteractive apt update -y && \
-          sudo env DEBIAN_FRONTEND=noninteractive apt install -y libarchive-tools
-      - name: Build
-        run: |
+          make distclean
           make
-          make clean
